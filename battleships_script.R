@@ -316,7 +316,7 @@ check_nearby_hits<- function(board,coord,dir="all"){
       
    
       
-    
+  
     
   }
   }
