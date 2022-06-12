@@ -2,29 +2,24 @@ install.packages('pryr')
 library(pryr)
 
 
+#Create new environment that will be used to contain objects modified by functions
+
+en<-new.env()
+
 
 ### Create clear board function ###
 
-clear<-function(obj){
+            
+new_board <-function(){
   
-  UseMethod("clear")
-  
-}
-
-
-
-clear.board <- function(obj_board)
-{
-  obj_board <-matrix(6,nrow=10,ncol=10)
-  colnames(obj_board) <-c("a","b","c","d","e","f","g","h","i","j")
-  rownames(obj_board) <-c(1:10)
+  obj_board <-array(c(rep(0,200)),dim=c(10,10,3) )
+  dimnames(obj_board)<-list(c(1:10),c("a","b","c","d","e","f","g","h","i","j"))
   class(obj_board)="board"
   return(obj_board)
 }
+            
 
 
-
-board1<-clear.board()
 
 ### Create ship object ###
 
@@ -33,11 +28,36 @@ board1<-clear.board()
 # It has attribute that says how long it is
 # It has attribute that says whether it is vartical or horizontal
 
-create_ship<-function(len){
+create_ship<-function(len,id){
   
-  ship<-rep(1,len)
+  
+  coor_list<-c(-1,-1)
+  dups <- list(coor_list)[rep(1,len)]
+  
+  state<-"intact"
+  
+  hits<-0
+  
+  ship<-list(id,len,hits,state,dups)
+  
+  names(ship)=c("id","length","hits","state","coordinates")
   class(ship)="ship"
   return(ship)  
+}
+
+
+length.ship<-function(ship){
+  
+  
+  return(ship$length)
+  
+}
+
+state.ship<-function(ship){
+  
+  
+  
+  return(ship$state)
 }
 
 ## This function will check if the ship can be placed in selected spot. Used inside assign ship function
@@ -50,15 +70,15 @@ check_if_free <-function(obj_board, obj_ship, vect_spot,vert=TRUE)
     
     ### vertical ship placement
     ### check if the ship will fit on board
-    if (vect_spot[1]+length(obj_ship)-1>nrow(obj_board)){
+    if (vect_spot[1]+length(obj_ship)-1>nrow(obj_board[,,2])){
       return(FALSE)
     } else {
       
       ### chceck if the fields are avialable
       
       BOARD_TEMP=obj_board[
-        (vect_spot[1]-1):min(vect_spot[1]+length(obj_ship),nrow(obj_board)),
-        (vect_spot[2]-1):min(vect_spot[2]+1,ncol(obj_board))]
+        (vect_spot[1]-1):min(vect_spot[1]+length(obj_ship),nrow(obj_board[,,2])),
+        (vect_spot[2]-1):min(vect_spot[2]+1,ncol(obj_board[,,2])),2]
       check<-sum(BOARD_TEMP==6)+sum(BOARD_TEMP==0)==dim(BOARD_TEMP)[1]*dim(BOARD_TEMP)[2]
       return(check) }
   } else {
@@ -68,19 +88,18 @@ check_if_free <-function(obj_board, obj_ship, vect_spot,vert=TRUE)
     ### horizontal ship placement
     ### check if the ship will fit on board
     
-    if (vect_spot[2]+length(obj_ship)-1>ncol(obj_board)){
+    if (vect_spot[2]+length(obj_ship)-1>ncol(obj_board[,,2])){
       return(FALSE)
     } else {
       
       BOARD_TEMP=obj_board[
-        (vect_spot[1]-1):min(vect_spot[1]+1,nrow(obj_board)),
-        (vect_spot[2]-1):min(vect_spot[2]+length(obj_ship),ncol(obj_board))]
+        (vect_spot[1]-1):min(vect_spot[1]+1,nrow(obj_board[,,2])),
+        (vect_spot[2]-1):min(vect_spot[2]+length(obj_ship),ncol(obj_board[,,2])),2]
       check<-(sum(BOARD_TEMP==6)+sum(BOARD_TEMP==0))==(dim(BOARD_TEMP)[1]*dim(BOARD_TEMP)[2])
       return(check) }
   }
   
 }
-
 
 
 ## This function will be used to change value on the boards to indicate that the ship is placed onto them ##
@@ -94,15 +113,18 @@ place_ship_on_board<-function(obj_board,obj_ship,vect_spot,vert=TRUE){
           
           for (i in c(0:(1+length(obj_ship))))
           {
-            obj_board[min(vect_spot[1]+i-1,nrow(obj_board)),vect_spot[2]-1]=0
-            obj_board[min(vect_spot[1]+i-1,nrow(obj_board)),vect_spot[2]]=0
-            obj_board[min(vect_spot[1]+i-1,nrow(obj_board)),min(vect_spot[2]+1,ncol(obj_board))]=0
+            obj_board[min(vect_spot[1]+i-1,nrow(obj_board[,,2])),vect_spot[2]-1,2]=0
+            obj_board[min(vect_spot[1]+i-1,nrow(obj_board[,,2])),vect_spot[2],2]=0
+            obj_board[min(vect_spot[1]+i-1,nrow(obj_board[,,2])),min(vect_spot[2]+1,ncol(obj_board[,,2])),2]=0
           }
           
           
           for (i in c(1:length(obj_ship)))
             {
-            obj_board[vect_spot[1]+i-1,vect_spot[2]]=1
+            obj_board[vect_spot[1]+i-1,vect_spot[2],2]=1
+            obj_board[vect_spot[1]+i-1,vect_spot[2],3]=obj_ship$id
+            #message(c(vect_spot[1],vect_spot[2]))
+            obj_ship$coordinates[[i]]=c(vect_spot[1]+i-1,vect_spot[2])
             }
           
           }
@@ -112,29 +134,31 @@ place_ship_on_board<-function(obj_board,obj_ship,vect_spot,vert=TRUE){
             for (i in c(0:(1+length(obj_ship))))
               
             {
-              obj_board[vect_spot[1]-1,min(vect_spot[2]+i-1,ncol(obj_board))]=0
-              obj_board[vect_spot[1],min(vect_spot[2]+i-1,ncol(obj_board))]=0
-              obj_board[min(vect_spot[1]+1,nrow(obj_board)),min(vect_spot[2]+i-1,ncol(obj_board))]=0
+              obj_board[vect_spot[1]-1,min(vect_spot[2]+i-1,ncol(obj_board[,,2])),2]=0
+              obj_board[vect_spot[1],min(vect_spot[2]+i-1,ncol(obj_board[,,2])),2]=0
+              obj_board[min(vect_spot[1]+1,nrow(obj_board)),min(vect_spot[2]+i-1,ncol(obj_board[,,2])),2]=0
             }
             
             
             
             for (i in c(1:length(obj_ship)))
             {
-              obj_board[vect_spot[1],vect_spot[2]+i-1]=1
+              obj_board[vect_spot[1],vect_spot[2]+i-1,2]=1
+              obj_board[vect_spot[1],vect_spot[2]+i-1,3]=obj_ship$id
+              obj_ship$coordinates[[i]]=c(vect_spot[1],vect_spot[2]+i-1)
             }
           }  
     }
   
           
-
-  return(obj_board)
+  return(list(obj_board,obj_ship))
   }
 
 
 
-board1<-gen_clear_board()
 
+
+#board1[ship1$coordinates[[1]][1],ship1$coordinates[[1]][2],2]
 
 
 ## The board fields can have following values:
@@ -147,27 +171,43 @@ board1<-gen_clear_board()
 ## 4. Miss - Ship cannot be placed here, it appears during the game. Cannot be shot. Displays as miss
 
 ## This function will populate the board based on semi-random algorithm  
-populate_board<-function(obj_board)
+
+
+populate_board<-function()
 {
-  obj_board<-gen_clear_board()
+  
+  
+  obj_board<-new_board()
   
   ### create ships to be placed on board
-  
-  ship11<-create_ship(1)
-  ship12<-create_ship(1)
-  ship13<-create_ship(1)
-  ship14<-create_ship(1)
+  #ship1$coordinates[[1]][1]<-5
+  #en$ship11<-create_ship(1,11)
+  #en$ship12<-create_ship(1,12)
+  #en$ship13<-create_ship(1,13)
+  #en$ship14<-create_ship(1,14)
     
-  ship21<-create_ship(2)
-  ship22<-create_ship(2)
-  ship23<-create_ship(2)
+  #en$ship21<-create_ship(2,21)
+  #en$ship22<-create_ship(2,22)
+  #en$ship23<-create_ship(2,23)
   
-  ship31<-create_ship(3)
-  ship32<-create_ship(3)
+  #en$ship31<-create_ship(3,31)
+  #en$ship32<-create_ship(3,32)
   
-  ship41<-create_ship(4)
+  #en$ship41<-create_ship(4,41)
 
+  ship11<-create_ship(1,11)
+  ship12<-create_ship(1,12)
+  ship13<-create_ship(1,13)
+  ship14<-create_ship(1,14)
   
+  ship21<-create_ship(2,21)
+  ship22<-create_ship(2,22)
+  ship23<-create_ship(2,23)
+  
+  ship31<-create_ship(3,31)
+  ship32<-create_ship(3,31)
+  
+  ship41<-create_ship(4,41)
   ## safety function iterator
   
   u=1
@@ -178,21 +218,19 @@ populate_board<-function(obj_board)
   
   ## Group ships into list
   
-  ship_list<-list(ship41,ship32,ship31,ship23,ship22,ship21,ship14,ship13,ship12,ship11)
-  
+  ship_list<-list("ship41"=ship41,"ship32"=ship32,"ship31"=ship31,"ship23"=ship23,"ship22"=ship22,"ship21"=ship21,"ship14"=ship14,"ship13"=ship13,"ship12"=ship12,"ship11"=ship11)
+  en$ship_list<-list(ship41,ship32,ship31,ship23,ship22,ship21,ship14,ship13,ship12,ship11)
   ## Possible vertical/horizontal values
-  
   vert_list<-c(TRUE,FALSE)
   
   ## Counter for debbuging
   
-  # i=1
+  i=1
   
   ## Iterate through all ships on the list
   
   for (ship in ship_list){
     #message(as.character(i))
-    #i=i+1
     #message(ship)
     
     # Randomly select coordinates and vertical/horizontal value
@@ -204,11 +242,8 @@ populate_board<-function(obj_board)
     
     
     # Change the randomly selected coordinates and orientation until the place to fit the ship is found
-    
+    #message(check_if_free(obj_board,ship,crd,vrt))
     while (check_if_free(obj_board,ship,crd,vrt)==FALSE) {
-      
-      
-    
       vrt<-sample(vert_list,1)
       crd<-sample(coor_list,1)[[1]]
       #message(check_if_free(obj_board,ship,crd,vrt))
@@ -221,8 +256,7 @@ populate_board<-function(obj_board)
       
       if (u>1000){  
         
-        obj_board<-gen_clear_board()
-        obj_board<-populate_board(obj_board)
+        
         break
         
       }
@@ -233,8 +267,13 @@ populate_board<-function(obj_board)
     ## when coordinates and orientation is found place the ship there
     
       #message(check_if_free(obj_board,ship,crd,vrt),crd,vrt)
-     obj_board<-place_ship_on_board(obj_board,ship,crd,vrt)
+     placing<-place_ship_on_board(obj_board,ship,crd,vrt)
+     obj_board<-placing[[1]]
+     #message(names(ship_list)[i])
+     #message(placing[[2]])
 
+     assign(paste0(names(ship_list)[i]),placing[[2]],envir = en)
+     i=i+1
   }
   
   
@@ -244,108 +283,73 @@ populate_board<-function(obj_board)
 
 
 
-board1<-populate_board(board1)
 
-sum(board1==1)
 
-board1
 
-board2<-gen_clear_board()
-
-check_if_free(board2,create_ship(2),c(7,3),TRUE)
-
-board2<-place_ship_on_board(board2,create_ship(3),c(6,6),FALSE)
-
-board2
 
 # This function will check if the field can be shot and shoot it, if possible
 shoot<-function(obj_board,vect_spot)
 {
-  if (!obj_board[vect_spot[1],vect_spot[2]] %in% c(2,3,4)){
+  if (!obj_board[vect_spot[1],vect_spot[2],2] %in% c(2,3,4)){
     
-    if (obj_board[vect_spot[1],vect_spot[2]] %in% c(6,0)){
+    if (obj_board[vect_spot[1],vect_spot[2],2] %in% c(6,0)){
       return(4)
     }
     
-    if (obj_board[vect_spot[1],vect_spot[2]]==1){
+    if (obj_board[vect_spot[1],vect_spot[2],2]==1){
+      
       
       return(2)
       
     }
     
+      return("MISS")
     
   }
   
   
-  
+  return("NA")
   
 }
 
-coo
-
-board3<-board2
-
-board3[2,1]<-shoot(board2,c(2,1))
-
-board3
 
 
-##########################
 
-check_nearby_hits<- function(board,coord,dir="all"){
+
+
+
+game<-function(board1,board2){
   
-  coord_list<-list()
-  ### check if the field is a hit
+  turn_ind=1
   
-  if (board[coord[1],coord[2]]==2){
-    
-  ## if yes append it to the list  
-    
-    append(coord_list,coord)
-    
-    
-    # check if fields around are 1
-    
-    
-    if (dir=="all"){
-    
-    if ((board[max(coord[1]-1,1),coord[2]]==1 || board[min(coord[1]+1,nrow(board)),coord[2]]==1) || ( board[coord[1],max(coord[2]-1,1)]==1 || board[coord[1],min(coord[2]+1,ncol(board))]==1 ) ){
-      
-      return(list())
-      } else {
-      
-   
-        
-      
-    }
-    
-    if (board[coord[1]+1,coord[2]]==1){
-      
-      return(list())
-    }  else{}
-      
-   
-      
+  player=list(board1,"filler",board2)
   
+  while ((sum(board1[,,2]==4)!=20)&& (sum(board2[,,2]==4)!=20)){
     
+    
+    coords_y<-readline(prompt="Insert Coordinate y: ")
+    coords_x<-readline(prompt="Insert Coordinate x: ")
+    
+    coords_x<-as.integer(coords_x)
+    coords_y<-as.integer(coords_y)
+    
+    coords=c(coords_y,coords_x)
+    
+    result<-shoot(player[[2+turn_ind]],coords)
+    message(result)
   }
-  }
-  return(coord_list)
+  
+  
+  return(0)
+  
 }
+board1<-populate_board()
+en$board1<-board1
 
-shoot(board3,c(9,9))         
+board2<-populate_board()
+en$board2<-board2
 
+game(board1,board2)
 
-board3[9,9]<-shoot(board2,c(9,9))
-
-
-board3
-check_nearby_hits(board3,c(2,1))
-# Turn indicator tells which players turn it is now
-turn_ind<-1
-
-turn_ind*(-1)
-# Check number of ships, that player still have at the begginning of each turn
-check_ships <- function(obj_board) # maybe counting number of destroyed fields on board?
-{}
-
+board1
+board2
