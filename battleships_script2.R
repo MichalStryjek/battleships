@@ -53,12 +53,6 @@ length.ship<-function(ship){
   
 }
 
-state.ship<-function(ship){
-  
-  
-  
-  return(ship$state)
-}
 
 ## This function will check if the ship can be placed in selected spot. Used inside assign ship function
 
@@ -214,8 +208,10 @@ populate_board<-function(qn)
   
   ## list of all possible coordinates from (1,1) to (1,100). Generated in Excel.
   
-  coor_list<-list(c(1,1),c(1,2),c(1,3),c(1,4),c(1,5),c(1,6),c(1,7),c(1,8),c(1,9),c(1,10),c(2,1),c(2,2),c(2,3),c(2,4),c(2,5),c(2,6),c(2,7),c(2,8),c(2,9),c(2,10),c(3,1),c(3,2),c(3,3),c(3,4),c(3,5),c(3,6),c(3,7),c(3,8),c(3,9),c(3,10),c(4,1),c(4,2),c(4,3),c(4,4),c(4,5),c(4,6),c(4,7),c(4,8),c(4,9),c(4,10),c(5,1),c(5,2),c(5,3),c(5,4),c(5,5),c(5,6),c(5,7),c(5,8),c(5,9),c(5,10),c(6,1),c(6,2),c(6,3),c(6,4),c(6,5),c(6,6),c(6,7),c(6,8),c(6,9),c(6,10),c(7,1),c(7,2),c(7,3),c(7,4),c(7,5),c(7,6),c(7,7),c(7,8),c(7,9),c(7,10),c(8,1),c(8,2),c(8,3),c(8,4),c(8,5),c(8,6),c(8,7),c(8,8),c(8,9),c(8,10),c(9,1),c(9,2),c(9,3),c(9,4),c(9,5),c(9,6),c(9,7),c(9,8),c(9,9),c(9,10),c(10,1),c(10,2),c(10,3),c(10,4),c(10,5),c(10,6),c(10,7),c(10,8),c(10,9),c(10,10))
-  
+  coor_list<-list("1"=c(1,1),"2"=c(1,2),"3"=c(1,3),"4"=c(1,4),"5"=c(1,5),"6"=c(1,6),"7"=c(1,7),"8"=c(1,8),"9"=c(1,9),"10"=c(1,10),"11"=c(2,1),"12"=c(2,2),"13"=c(2,3),"14"=c(2,4),"15"=c(2,5),"16"=c(2,6),"17"=c(2,7),"18"=c(2,8),"19"=c(2,9),"20"=c(2,10),"21"=c(3,1),"22"=c(3,2),"23"=c(3,3),"24"=c(3,4),"25"=c(3,5),"26"=c(3,6),"27"=c(3,7),"28"=c(3,8),"29"=c(3,9),"30"=c(3,10),"31"=c(4,1),"32"=c(4,2),"33"=c(4,3),"34"=c(4,4),"35"=c(4,5),"36"=c(4,6),"37"=c(4,7),"38"=c(4,8),"39"=c(4,9),"40"=c(4,10),"41"=c(5,1),"42"=c(5,2),"43"=c(5,3),"44"=c(5,4),"45"=c(5,5),"46"=c(5,6),"47"=c(5,7),"48"=c(5,8),"49"=c(5,9),"50"=c(5,10),"51"=c(6,1),"52"=c(6,2),"53"=c(6,3),"54"=c(6,4),"55"=c(6,5),"56"=c(6,6),"57"=c(6,7),"58"=c(6,8),"59"=c(6,9),"60"=c(6,10),"61"=c(7,1),"62"=c(7,2),"63"=c(7,3),"64"=c(7,4),"65"=c(7,5),"66"=c(7,6),"67"=c(7,7),"68"=c(7,8),"69"=c(7,9),"70"=c(7,10),"71"=c(8,1),"72"=c(8,2),"73"=c(8,3),"74"=c(8,4),"75"=c(8,5),"76"=c(8,6),"77"=c(8,7),"78"=c(8,8),"79"=c(8,9),"80"=c(8,10),"81"=c(9,1),"82"=c(9,2),"83"=c(9,3),"84"=c(9,4),"85"=c(9,5),"86"=c(9,6),"87"=c(9,7),"88"=c(9,8),"89"=c(9,9),"90"=c(9,10),"91"=c(10,1),"92"=c(10,2),"93"=c(10,3),"94"=c(10,4),"95"=c(10,5),"96"=c(10,6),"97"=c(10,7),"98"=c(10,8),"99"=c(10,9),"100"=c(10,10))
+  name<-names(sample(coor_list,1))
+  coor_list<-coor_list[names(coor_list)!=name]
+  coor_list[names(coor_list)=="2"]
   ## Group ships into list
   
   ship_list<-list("ship41"=ship41,"ship32"=ship32,"ship31"=ship31,"ship23"=ship23,"ship22"=ship22,"ship21"=ship21,"ship14"=ship14,"ship13"=ship13,"ship12"=ship12,"ship11"=ship11)
@@ -308,18 +304,14 @@ shoot<-function(obj_board,vect_spot)
 
 
 
-where("id"==14)
-
-
-
 game<-function(board1,board2){
   
   
       turn_ind=1
   
-      coor_list<-list(c(1,1),c(1,2),c(1,3),c(1,4),c(1,5),c(1,6),c(1,7),c(1,8),c(1,9),c(1,10),c(2,1),c(2,2),c(2,3),c(2,4),c(2,5),c(2,6),c(2,7),c(2,8),c(2,9),c(2,10),c(3,1),c(3,2),c(3,3),c(3,4),c(3,5),c(3,6),c(3,7),c(3,8),c(3,9),c(3,10),c(4,1),c(4,2),c(4,3),c(4,4),c(4,5),c(4,6),c(4,7),c(4,8),c(4,9),c(4,10),c(5,1),c(5,2),c(5,3),c(5,4),c(5,5),c(5,6),c(5,7),c(5,8),c(5,9),c(5,10),c(6,1),c(6,2),c(6,3),c(6,4),c(6,5),c(6,6),c(6,7),c(6,8),c(6,9),c(6,10),c(7,1),c(7,2),c(7,3),c(7,4),c(7,5),c(7,6),c(7,7),c(7,8),c(7,9),c(7,10),c(8,1),c(8,2),c(8,3),c(8,4),c(8,5),c(8,6),c(8,7),c(8,8),c(8,9),c(8,10),c(9,1),c(9,2),c(9,3),c(9,4),c(9,5),c(9,6),c(9,7),c(9,8),c(9,9),c(9,10),c(10,1),c(10,2),c(10,3),c(10,4),c(10,5),c(10,6),c(10,7),c(10,8),c(10,9),c(10,10))
+      coor_list<-list("1"=c(1,1),"2"=c(1,2),"3"=c(1,3),"4"=c(1,4),"5"=c(1,5),"6"=c(1,6),"7"=c(1,7),"8"=c(1,8),"9"=c(1,9),"10"=c(1,10),"11"=c(2,1),"12"=c(2,2),"13"=c(2,3),"14"=c(2,4),"15"=c(2,5),"16"=c(2,6),"17"=c(2,7),"18"=c(2,8),"19"=c(2,9),"20"=c(2,10),"21"=c(3,1),"22"=c(3,2),"23"=c(3,3),"24"=c(3,4),"25"=c(3,5),"26"=c(3,6),"27"=c(3,7),"28"=c(3,8),"29"=c(3,9),"30"=c(3,10),"31"=c(4,1),"32"=c(4,2),"33"=c(4,3),"34"=c(4,4),"35"=c(4,5),"36"=c(4,6),"37"=c(4,7),"38"=c(4,8),"39"=c(4,9),"40"=c(4,10),"41"=c(5,1),"42"=c(5,2),"43"=c(5,3),"44"=c(5,4),"45"=c(5,5),"46"=c(5,6),"47"=c(5,7),"48"=c(5,8),"49"=c(5,9),"50"=c(5,10),"51"=c(6,1),"52"=c(6,2),"53"=c(6,3),"54"=c(6,4),"55"=c(6,5),"56"=c(6,6),"57"=c(6,7),"58"=c(6,8),"59"=c(6,9),"60"=c(6,10),"61"=c(7,1),"62"=c(7,2),"63"=c(7,3),"64"=c(7,4),"65"=c(7,5),"66"=c(7,6),"67"=c(7,7),"68"=c(7,8),"69"=c(7,9),"70"=c(7,10),"71"=c(8,1),"72"=c(8,2),"73"=c(8,3),"74"=c(8,4),"75"=c(8,5),"76"=c(8,6),"77"=c(8,7),"78"=c(8,8),"79"=c(8,9),"80"=c(8,10),"81"=c(9,1),"82"=c(9,2),"83"=c(9,3),"84"=c(9,4),"85"=c(9,5),"86"=c(9,6),"87"=c(9,7),"88"=c(9,8),"89"=c(9,9),"90"=c(9,10),"91"=c(10,1),"92"=c(10,2),"93"=c(10,3),"94"=c(10,4),"95"=c(10,5),"96"=c(10,6),"97"=c(10,7),"98"=c(10,8),"99"=c(10,9),"100"=c(10,10))
   
-      while ((sum(board1[,,2]==4)!=20)&& (sum(board2[,,2]==4)!=20)){
+      while ((sum(board1[,,2]==3)!=20)&& (sum(board2[,,2]==3)!=20)){
     
     
             if(turn_ind==1){
@@ -349,6 +341,10 @@ game<-function(board1,board2){
                   en$board1[coords_y,coords_x,2]=4
                   en$board1[coords_y,coords_x,1]=4
                   board1<-en$board1
+                  
+                  # change player if miss
+                  turn_ind=turn_ind*(-1)
+                  
             }
       
      
@@ -406,20 +402,110 @@ game<-function(board1,board2){
             }
       
       
-      }     
+           
     
     
-      if(turn_ind==(-1)){
+          if(turn_ind==(-1)){
       
       
-      ### AI TURN ###
-      ## fields available to shoot ##
+          ### AI TURN ###
+            
+            
+            ## Get coordinates ##
+            
+            ## take random name from list 
+            
+            name<-names(sample(coor_list,1))
+            
+            ## find target coordinates
+            
+            target<-coor_list[names(coor_list)==name]
+            
+            
+            ## remove used field
+            coor_list<-coor_list[names(coor_list)!=name]
+            
+            coords=target[[1]]
+            
+            coords_y=coords[1]
+            coords_x=coords[2]
+            
+            ## Shoot the coordinates and return result ##
+            
+            result<-shoot(board2,coords)
+            message("AI shoots",coords)
+            message(result)
+            
+            ## if missed mark it on visible board and hidden board
+            
+            if (result=="MISS"){
+              
+              ai$board2[coords_y,coords_x,2]=4
+              ai$board2[coords_y,coords_x,1]=4
+              board2<-ai$board2
+              
+              #turn_ind=turn_ind*(-1)
+              
+            }
+            
+            
+            else { 
+              
+                  ## if hit mark it on visible board and hidden board also perform check if ship is sunk  
+              
+                  if(result=="HIT"){
+                
+                    ai$board2[coords_y,coords_x,2]=2
+                    ai$board2[coords_y,coords_x,1]=2
+                
+                    ## return id of hit ship
+                    message(coords_y,coords_x)
+                    ship_id<-ai$board2[coords_y,coords_x,3]
+                
+                    ## create temporary ship to make changes to
+                
+                    ship_temp<-get(paste0("ship",ship_id),envir = ai)
+                
+                    ship_temp$hits<-ship_temp$hits+1
+                    ship_temp$state<-"hit"
+                    #message(ship_temp$coordinates)
+                
+                    ## check if sunk
+                
+                    if (ship_temp$hits>=length(ship_temp)) {
+                  
+                          ship_temp$state<-"sunk"
+                  
+                          ### change board to show sunk ship
+                  
+                          for (i in c(1:length(ship_temp))){
+                                message(ship_temp$coordinates[[i]][1],ship_temp$coordinates[[i]][2])
+                                ai$board2[ship_temp$coordinates[[i]][1],ship_temp$coordinates[[i]][2],2]<-3
+                                ai$board2[ship_temp$coordinates[[i]][1],ship_temp$coordinates[[i]][2],1]<-3
+                    
+                          }
+                          message("Sunk")
+                    }
+                
+                    ## change ship status on en using temporary ship
+                
+                    assign(paste0("ship",ship_id),ship_temp,envir=ai)
+                
+                    message("HIT")
+                
+                
+                    board2<-ai$board2
+                    
+      }# while loop ends here
+              }
+              
+              }
+            
+            
+              }
       
       
-      
-      }
   message("GAME")  
-  return(0)
   
 }
 
@@ -431,8 +517,12 @@ ai$board2<-board2
 
 
 board1
-game(board1,board2)
-en$board1
-SHIP55<-create_ship(3,55)
 
-SHIP55$coordinates[1]
+en$board1
+ai$board2
+
+game(board1,board2)
+
+
+coor_list<-list(c(1,1),c(1,2),c(1,3),c(1,4),c(1,5),c(1,6),c(1,7),c(1,8),c(1,9),c(1,10),c(2,1),c(2,2),c(2,3),c(2,4),c(2,5),c(2,6),c(2,7),c(2,8),c(2,9),c(2,10),c(3,1),c(3,2),c(3,3),c(3,4),c(3,5),c(3,6),c(3,7),c(3,8),c(3,9),c(3,10),c(4,1),c(4,2),c(4,3),c(4,4),c(4,5),c(4,6),c(4,7),c(4,8),c(4,9),c(4,10),c(5,1),c(5,2),c(5,3),c(5,4),c(5,5),c(5,6),c(5,7),c(5,8),c(5,9),c(5,10),c(6,1),c(6,2),c(6,3),c(6,4),c(6,5),c(6,6),c(6,7),c(6,8),c(6,9),c(6,10),c(7,1),c(7,2),c(7,3),c(7,4),c(7,5),c(7,6),c(7,7),c(7,8),c(7,9),c(7,10),c(8,1),c(8,2),c(8,3),c(8,4),c(8,5),c(8,6),c(8,7),c(8,8),c(8,9),c(8,10),c(9,1),c(9,2),c(9,3),c(9,4),c(9,5),c(9,6),c(9,7),c(9,8),c(9,9),c(9,10),c(10,1),c(10,2),c(10,3),c(10,4),c(10,5),c(10,6),c(10,7),c(10,8),c(10,9),c(10,10))
+sample(coor_list,1)
