@@ -1,5 +1,14 @@
 library(shiny)
 
+board1<-populate_board(en)
+en$board1<-board1
+
+
+board2<-populate_board(ai)
+ai$board2<-board2
+
+
+
 ui <- fluidPage(
   titlePanel("You"),
       plotOutput("boxPlot", click = "boxPlot_click"),
