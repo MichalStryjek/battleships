@@ -440,12 +440,255 @@ player_turn<-function(coords_y,coords_x){
             } # PLAYER TURN CODE ENDS HERE
       
         
+shoot_ai<-function(vect_spot)
+{
+  if (!ai$board2[vect_spot[1],vect_spot[2],2] %in% c(2,3,4)){
+    
+    if (ai$board2[vect_spot[1],vect_spot[2],2] %in% c(6,0)){
+      return("MISS")
+    }
+    
+    if (ai$board2[vect_spot[1],vect_spot[2],2]==1){
+      return("HIT")
+    }
+  }
+  
+  
+  return("NA")
+  
+}
+
+
+
+ai_turn<-function(){
+  na_counter<-0
+  saved_coords<-FALSE
+  turn_ind=-1
+  
+  en$player_shots<-0
+  ai$ai_shots<-0
+  en$player_hits<-0
+  ai$ai_hits<-0
+  
+  
+  coor_list<-list("1"=c(1,1),"2"=c(1,2),"3"=c(1,3),"4"=c(1,4),"5"=c(1,5),"6"=c(1,6),"7"=c(1,7),"8"=c(1,8),"9"=c(1,9),"10"=c(1,10),"11"=c(2,1),"12"=c(2,2),"13"=c(2,3),"14"=c(2,4),"15"=c(2,5),"16"=c(2,6),"17"=c(2,7),"18"=c(2,8),"19"=c(2,9),"20"=c(2,10),"21"=c(3,1),"22"=c(3,2),"23"=c(3,3),"24"=c(3,4),"25"=c(3,5),"26"=c(3,6),"27"=c(3,7),"28"=c(3,8),"29"=c(3,9),"30"=c(3,10),"31"=c(4,1),"32"=c(4,2),"33"=c(4,3),"34"=c(4,4),"35"=c(4,5),"36"=c(4,6),"37"=c(4,7),"38"=c(4,8),"39"=c(4,9),"40"=c(4,10),"41"=c(5,1),"42"=c(5,2),"43"=c(5,3),"44"=c(5,4),"45"=c(5,5),"46"=c(5,6),"47"=c(5,7),"48"=c(5,8),"49"=c(5,9),"50"=c(5,10),"51"=c(6,1),"52"=c(6,2),"53"=c(6,3),"54"=c(6,4),"55"=c(6,5),"56"=c(6,6),"57"=c(6,7),"58"=c(6,8),"59"=c(6,9),"60"=c(6,10),"61"=c(7,1),"62"=c(7,2),"63"=c(7,3),"64"=c(7,4),"65"=c(7,5),"66"=c(7,6),"67"=c(7,7),"68"=c(7,8),"69"=c(7,9),"70"=c(7,10),"71"=c(8,1),"72"=c(8,2),"73"=c(8,3),"74"=c(8,4),"75"=c(8,5),"76"=c(8,6),"77"=c(8,7),"78"=c(8,8),"79"=c(8,9),"80"=c(8,10),"81"=c(9,1),"82"=c(9,2),"83"=c(9,3),"84"=c(9,4),"85"=c(9,5),"86"=c(9,6),"87"=c(9,7),"88"=c(9,8),"89"=c(9,9),"90"=c(9,10),"91"=c(10,1),"92"=c(10,2),"93"=c(10,3),"94"=c(10,4),"95"=c(10,5),"96"=c(10,6),"97"=c(10,7),"98"=c(10,8),"99"=c(10,9),"100"=c(10,10))
+  
+  while (turn_ind==(-1)){
+    
+    
+    
+    
+    ### AI TURN ###
+    
+    
+    ## Get coordinates ##
+    ## if previous shoot was a hit with no sinking the AI will try field next to the previous one
+    if (saved_coords==TRUE){
+      message("saved coords are true")
+      coor_mod<-list(c(0,-1),c(0,1),c(-1,0),c(1,0))
       
+      if(coords[1]==10 && coords[2]==10){
+        message("corner 10 10")  
+        coor_mod<-list(c(0,-1),c(-1,0))
+        
+      }else{
+        
+        if(coords[1]==1 && coords[2]==1){
+          message("corner 1 1")
+          coor_mod<-list(c(0,1),c(1,0))
+        }else{
+          
+          if(coords[1]==10 && coords[2]==1){
+            message("corner 10 1")
+            coor_mod<-list(c(0,1),c(-1,0))
+            
+          }else{
+            
+            if(coords[1]==1 && coords[2]==10){
+              message("corner 1 10")
+              coor_mod<-list(c(0,-1),c(1,0))
+              
+            }else{
+              
+              if(coords[1]==10){
+                message("bottom line")
+                coor_mod<-list(c(0,-1),c(-1,0),c(0,1))  
+                
+              }else{
+                
+                if(coords[1]==1){
+                  message("top line")
+                  coor_mod<-list(c(0,-1),c(1,0),c(0,1))
+                  
+                }else{
+                  if(coords[2]==10){
+                    message("right line")
+                    coor_mod<-list(c(0,-1),c(1,0),c(-1,0))
+                    
+                  }else{
+                    
+                    if (coords[2]==1){
+                      message("left line")
+                      coor_mod<-list(c(0,1),c(1,0),c(-1,0))
+                      
+                      
+                      
+                    }
+                  }
+                }
+              }
+            }
+          }  
+          
+        }  
+        
+      }
+      
+      
+      
+      
+      
+      coor_add<-sample(coor_mod,1)[[1]]
+      message("adding to coordinates:", coor_add)
+      coords<-coords+coor_add
+      message("new coordinates",coords)
+      coords_y=coords[1]
+      coords_x=coords[2]
+      #saved_coords<-FALSE
+      
+    }
+    else{
+      
+      ## take random name from list 
+      message("saved coords FALSE")
+      name<-names(sample(coor_list,1))
+      
+      ## find target coordinates
+      
+      target<-coor_list[names(coor_list)==name]
+      
+      
+      ## remove used field
+      coor_list<-coor_list[names(coor_list)!=name]
+      
+      coords=target[[1]]
+      message("new coords", coords)
+      coords_y=coords[1]
+      coords_x=coords[2]
+      
+    }
+    
+    
+    ## Shoot the coordinates and return result ##
+    
+    result<-shoot_ai(coords)
+    message("AI shoots",coords)
+    message(result)
+    
+    ## if missed mark it on visible board and hidden board
+    
+    if (result=="MISS"){
+      message("coords are:", coords_y, coords_x, " setting to 4")
+      ai$board2[coords_y,coords_x,2]=4
+      ai$board2[coords_y,coords_x,1]=4
+      board2<-ai$board2
+      message("shot at", coords_y,coords_x)
+      if (saved_coords==TRUE){
+        coords<-coords-coor_add
+        message("returning the coords", coords, " by ", coor_add)
+      }
+      turn_ind=turn_ind*(-1)
+      
+    }
+    
+    
+    else { 
+      
+      ## if hit mark it on visible board and hidden board also perform check if ship is sunk  
+      
+      if(result=="HIT"){
+        saved_coords<-TRUE
+        ai$board2[coords_y,coords_x,2]=2
+        ai$board2[coords_y,coords_x,1]=2
+        message("coords are:", coords_y, coords_x," set to 2")
+        ## return id of hit ship
+        message(coords_y,coords_x)
+        ship_id<-ai$board2[coords_y,coords_x,3]
+        
+        ## create temporary ship to make changes to
+        
+        ship_temp<-get(paste0("ship",ship_id),envir = ai)
+        
+        ship_temp$hits<-ship_temp$hits+1
+        ship_temp$state<-"hit"
+        #message(ship_temp$coordinates)
+        
+        ## check if sunk
+        
+        if (ship_temp$hits>=length(ship_temp)) {
+          
+          ship_temp$state<-"sunk"
+          
+          ### change board to show sunk ship
+          
+          for (i in c(1:length(ship_temp))){
+            message(ship_temp$coordinates[[i]][1],ship_temp$coordinates[[i]][2])
+            ai$board2[ship_temp$coordinates[[i]][1],ship_temp$coordinates[[i]][2],2]<-3
+            ai$board2[ship_temp$coordinates[[i]][1],ship_temp$coordinates[[i]][2],1]<-3
+            
+          }
+          
+          
+          saved_coords<-FALSE
+          message("Sunk")
+        }
+        
+        ## change ship status on en using temporary ship
+        
+        assign(paste0("ship",ship_id),ship_temp,envir=ai)
+        
+        #message("HIT")
+        
+        
+        board2<-ai$board2
+        
+      }
+      
+      else { 
+        
+        
+        if(result=="NA"){
+          if (saved_coords==TRUE){
+            
+            if(na_counter<=10){
+              na_counter=na_counter+1
+              coords<-coords-coor_add
+              message("reverting coords back to", coords)
+            }else{
+              message("NA limit seting saved coords to FALSE")
+              saved_coords=FALSE
+              na_counter<-0
+            }
+          }
+          
+        }
+        
+      }  
+      
+      
+    } # AI TURN CODE ENDS HERE
+    
+    
+  }# while loop ends here
+  
+}      
            
 
 board1<-populate_board(en)
 en$board1<-board1
 
+
+en$board1
 
 board2<-populate_board(ai)
 ai$board2<-board2
@@ -453,6 +696,6 @@ ai$board2<-board2
 
 game(board1,board2)
 
-#coor_list<-list("1"=c(1,1),"2"=c(1,2),"3"=c(1,3),"4"=c(1,4),"5"=c(1,5),"6"=c(1,6),"7"=c(1,7),"8"=c(1,8),"9"=c(1,9),"10"=c(1,10),"11"=c(2,1),"12"=c(2,2),"13"=c(2,3),"14"=c(2,4),"15"=c(2,5),"16"=c(2,6),"17"=c(2,7),"18"=c(2,8),"19"=c(2,9),"20"=c(2,10),"21"=c(3,1),"22"=c(3,2),"23"=c(3,3),"24"=c(3,4),"25"=c(3,5),"26"=c(3,6),"27"=c(3,7),"28"=c(3,8),"29"=c(3,9),"30"=c(3,10),"31"=c(4,1),"32"=c(4,2),"33"=c(4,3),"34"=c(4,4),"35"=c(4,5),"36"=c(4,6),"37"=c(4,7),"38"=c(4,8),"39"=c(4,9),"40"=c(4,10),"41"=c(5,1),"42"=c(5,2),"43"=c(5,3),"44"=c(5,4),"45"=c(5,5),"46"=c(5,6),"47"=c(5,7),"48"=c(5,8),"49"=c(5,9),"50"=c(5,10),"51"=c(6,1),"52"=c(6,2),"53"=c(6,3),"54"=c(6,4),"55"=c(6,5),"56"=c(6,6),"57"=c(6,7),"58"=c(6,8),"59"=c(6,9),"60"=c(6,10),"61"=c(7,1),"62"=c(7,2),"63"=c(7,3),"64"=c(7,4),"65"=c(7,5),"66"=c(7,6),"67"=c(7,7),"68"=c(7,8),"69"=c(7,9),"70"=c(7,10),"71"=c(8,1),"72"=c(8,2),"73"=c(8,3),"74"=c(8,4),"75"=c(8,5),"76"=c(8,6),"77"=c(8,7),"78"=c(8,8),"79"=c(8,9),"80"=c(8,10),"81"=c(9,1),"82"=c(9,2),"83"=c(9,3),"84"=c(9,4),"85"=c(9,5),"86"=c(9,6),"87"=c(9,7),"88"=c(9,8),"89"=c(9,9),"90"=c(9,10),"91"=c(10,1),"92"=c(10,2),"93"=c(10,3),"94"=c(10,4),"95"=c(10,5),"96"=c(10,6),"97"=c(10,7),"98"=c(10,8),"99"=c(10,9),"100"=c(10,10))
+coor_list<-list("1"=c(1,1),"2"=c(1,2),"3"=c(1,3),"4"=c(1,4),"5"=c(1,5),"6"=c(1,6),"7"=c(1,7),"8"=c(1,8),"9"=c(1,9),"10"=c(1,10),"11"=c(2,1),"12"=c(2,2),"13"=c(2,3),"14"=c(2,4),"15"=c(2,5),"16"=c(2,6),"17"=c(2,7),"18"=c(2,8),"19"=c(2,9),"20"=c(2,10),"21"=c(3,1),"22"=c(3,2),"23"=c(3,3),"24"=c(3,4),"25"=c(3,5),"26"=c(3,6),"27"=c(3,7),"28"=c(3,8),"29"=c(3,9),"30"=c(3,10),"31"=c(4,1),"32"=c(4,2),"33"=c(4,3),"34"=c(4,4),"35"=c(4,5),"36"=c(4,6),"37"=c(4,7),"38"=c(4,8),"39"=c(4,9),"40"=c(4,10),"41"=c(5,1),"42"=c(5,2),"43"=c(5,3),"44"=c(5,4),"45"=c(5,5),"46"=c(5,6),"47"=c(5,7),"48"=c(5,8),"49"=c(5,9),"50"=c(5,10),"51"=c(6,1),"52"=c(6,2),"53"=c(6,3),"54"=c(6,4),"55"=c(6,5),"56"=c(6,6),"57"=c(6,7),"58"=c(6,8),"59"=c(6,9),"60"=c(6,10),"61"=c(7,1),"62"=c(7,2),"63"=c(7,3),"64"=c(7,4),"65"=c(7,5),"66"=c(7,6),"67"=c(7,7),"68"=c(7,8),"69"=c(7,9),"70"=c(7,10),"71"=c(8,1),"72"=c(8,2),"73"=c(8,3),"74"=c(8,4),"75"=c(8,5),"76"=c(8,6),"77"=c(8,7),"78"=c(8,8),"79"=c(8,9),"80"=c(8,10),"81"=c(9,1),"82"=c(9,2),"83"=c(9,3),"84"=c(9,4),"85"=c(9,5),"86"=c(9,6),"87"=c(9,7),"88"=c(9,8),"89"=c(9,9),"90"=c(9,10),"91"=c(10,1),"92"=c(10,2),"93"=c(10,3),"94"=c(10,4),"95"=c(10,5),"96"=c(10,6),"97"=c(10,7),"98"=c(10,8),"99"=c(10,9),"100"=c(10,10))
 
 
