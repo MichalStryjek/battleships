@@ -1,0 +1,23 @@
+---
+title: "End of the game"
+output: html_document
+
+params:
+  winner: Player
+  shots: 100
+  accuracy: 20
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Game summary
+
+The winner is: `r params$winner`
+
+#### Your stats:
+
+You have fired `r params$shots` shots
+
+Your accuracy was `r params$accuracy`%
